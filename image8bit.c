@@ -172,6 +172,8 @@ Image ImageCreate(int width, int height, uint8 maxval) {
   assert(height >= 0);
   assert(0 < maxval && maxval <= PixMax);
 
+  // Insert your code here - done
+
   // Aloca memória para a estrutura
   Image new_Image = (Image)malloc(sizeof(struct image));
   if (new_Image == NULL) {
@@ -209,6 +211,7 @@ Image ImageCreate(int width, int height, uint8 maxval) {
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
   assert(imgp != NULL);
+  // Insert your code here - done
 
   if (*imgp != NULL) {
     // Libera a memória alocada para o array de pixels
@@ -329,15 +332,17 @@ int ImageMaxval(Image img) { ///
 /// *min is set to the minimum gray level in the image,
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
-  assert(img != NULL);
+  assert (img != NULL);
+
+  // Insert your code here - done
   
   // Initialize min and max with extreme values
-  *min = PixMax;
+  *min = 255;
   *max = 0;
 
   for (int h = 0; h < img->height; h++) {
     for (int w = 0; w < img->width; w++) {
-      uint8 i = h * img->width + w;
+      uint8 i = G(img, w, h);  // Use G to calculate the linear index
       uint8 gray_level = img->pixel[i];
 
       // Update min and max
@@ -352,6 +357,7 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 }
 
 
+
 /// Check if pixel position (x,y) is inside img.
 int ImageValidPos(Image img, int x, int y) { ///
   assert (img != NULL);
@@ -359,8 +365,9 @@ int ImageValidPos(Image img, int x, int y) { ///
 }
 
 /// Check if rectangular area (x,y,w,h) is completely inside img.
-int ImageValidRect(Image img, int x, int y, int w, int h) { ///
+int ImageValidRect(Image img, int x, int y, int w, int h) { 
   assert (img != NULL);
+  /// Insert your code here - done
   return (x >= 0 && x + w < img->width && w > 0) && (y >= 0 && y + h < img->height && h > 0);
 }
 
@@ -376,7 +383,8 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 // The returned index must satisfy (0 <= index < img->width*img->height)
 static inline int G(Image img, int x, int y) {
   int index;
-  // Insert your code here!
+  // Insert your code here! - done
+  index = y * img->width + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
