@@ -296,6 +296,8 @@ int ImageSave(Image img, const char* filename) { ///
   // Cleanup
   if (f != NULL) fclose(f);
   return success;
+
+
 }
 
 
@@ -327,9 +329,28 @@ int ImageMaxval(Image img) { ///
 /// *min is set to the minimum gray level in the image,
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
-  assert (img != NULL);
-  // Insert your code here!
+  assert(img != NULL);
+  
+  // Initialize min and max with extreme values
+  *min = 255;
+  *max = 0;
+
+  for (int h = 0; h < img->height; h++) {
+    for (int w = 0; w < img->width; w++) {
+      uint8 i = h * img->width + w;
+      uint8 gray_level = img->pixel[i];
+
+      // Update min and max
+      if (gray_level > *max) {
+        *max = gray_level;
+      }
+      if (gray_level < *min) {
+        *min = gray_level;
+      }
+    }
+  }
 }
+
 
 /// Check if pixel position (x,y) is inside img.
 int ImageValidPos(Image img, int x, int y) { ///
