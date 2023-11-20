@@ -438,6 +438,17 @@ void ImageNegative(Image img) { ///
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
   // Insert your code here!
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  for (int i = 0; i < width * height; i++){
+    uint8 level = img->pixel[i];
+    if (level >= thr){
+      img->pixel[i] = PixMax;
+    }else {
+      img->pixel[i] = 0;
+    }
+  }
 }
 
 /// Brighten image by a factor.
