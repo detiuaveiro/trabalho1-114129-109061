@@ -332,18 +332,15 @@ int ImageMaxval(Image img) { ///
 /// *min is set to the minimum gray level in the image,
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
-  assert (img != NULL);
+  assert(img != NULL);
 
-  // Insert your code here - done
-  
   // Initialize min and max with extreme values
   *min = 255;
   *max = 0;
 
   for (int h = 0; h < img->height; h++) {
     for (int w = 0; w < img->width; w++) {
-      uint8 i = G(img, w, h);  // Use G to calculate the linear index
-      uint8 gray_level = img->pixel[i];
+      uint8 gray_level = ImageGetPixel(img, w, h);
 
       // Update min and max
       if (gray_level > *max) {
@@ -355,6 +352,7 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
     }
   }
 }
+
 
 
 
@@ -384,7 +382,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) {
 static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here! - done
-  index = y * img->width + x;
+  index = y * ImageWidth(img) + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -418,9 +416,21 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// This transforms dark pixels to light pixels and vice-versa,
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) { ///
-  assert (img != NULL);
-  // Insert your code here!
+  assert(img != NULL);
+  // Insert your code here! - done
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  for (int i = 0; i < width * height; i++) {
+    // Calculate negative level for each pixel
+    uint8 originalLevel = img->pixel[i];
+    uint8 negativeLevel = PixMax - originalLevel;
+
+    // Set the pixel to the negative level
+    img->pixel[i] = negativeLevel;
+  }
 }
+
 
 /// Apply threshold to image.
 /// Transform all pixels with level<thr to black (0) and
