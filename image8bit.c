@@ -437,7 +437,7 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
-  // Insert your code here!
+  // Insert your code here! - done
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
@@ -457,8 +457,20 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  // ? assert (factor >= 0.0);
+  assert (factor >= 0.0);
   // Insert your code here!
+
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  for (int i = 0; i < width * height; i++){
+    uint8 new_level = img->pixel[i] * factor;
+    if ( new_level > PixMax){
+      new_level = PixMax;
+    }
+    img->pixel[i] = new_level;
+  }
+
 }
 
 
