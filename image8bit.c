@@ -332,7 +332,7 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert(img != NULL);
   
   // Initialize min and max with extreme values
-  *min = 255;
+  *min = PixMax;
   *max = 0;
 
   for (int h = 0; h < img->height; h++) {
