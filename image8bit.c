@@ -534,8 +534,31 @@ Image ImageRotate(Image img)
 Image ImageMirror(Image img)
 { ///
   assert(img != NULL);
-  // Insert your code here!
+  // Insert your code here:
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  // Cria uma nova imagem com as mesmas dimensões
+  Image mirroredImg = ImageCreate(width, height, img->maxval);
+
+  for (int y = 0; y < height; y++)
+  {
+    for (int x = 0; x < width; x++)
+    {
+      // Calcula a coordenada x espelhada
+      int mirroredX = width - 1 - x;
+
+      // Obtém o valor do pixel na imagem original
+      uint8 pixelValue = ImageGetPixel(img, x, y);
+
+      // Define o valor do pixel na imagem espelhada
+      ImageSetPixel(mirroredImg, mirroredX, y, pixelValue);
+    }
+  }
+
+  return mirroredImg;
 }
+
 
 /// Crop a rectangular subimage from img.
 /// The rectangle is specified by the top left corner coords (x, y) and
