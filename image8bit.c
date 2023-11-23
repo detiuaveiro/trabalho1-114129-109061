@@ -147,12 +147,15 @@ void ImageInit(void) { ///
   InstrCalibrate();
   InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
   // Name other counters here...
+  InstrName[3] = "bri";
   
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
 // Add more macros here...
+#define PIXMEM InstrCount[3]
+
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
@@ -425,6 +428,7 @@ void ImageNegative(Image img) { ///
     // Calculate negative level for each pixel
     uint8 originalLevel = img->pixel[i];
     uint8 negativeLevel = PixMax - originalLevel;
+  int width = ImageWidth(img);
 
     // Set the pixel to the negative level
     img->pixel[i] = negativeLevel;
@@ -458,7 +462,7 @@ void ImageThreshold(Image img, uint8 thr) { ///
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
   assert (factor >= 0.0);
-  // Insert your code here!
+  // Insert your code here! - done
 
   int width = ImageWidth(img);
   int height = ImageHeight(img);
