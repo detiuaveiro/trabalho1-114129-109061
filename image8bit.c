@@ -443,7 +443,6 @@ void ImageNegative(Image img)
     // Calculate negative level for each pixel
     uint8 originalLevel = img->pixel[i];
     uint8 negativeLevel = PixMax - originalLevel;
-    int width = ImageWidth(img);
 
     // Set the pixel to the negative level
     img->pixel[i] = negativeLevel;
