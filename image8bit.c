@@ -662,7 +662,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2)
     }
   }
   return 1; // As imagens coincidem
-} 
+}
 
 /// Locate a subimage inside another image.
 /// Searches for img2 inside img1.
@@ -672,7 +672,7 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 { ///
   assert(img1 != NULL);
   assert(img2 != NULL);
-  // Insert your code here! 
+  // Insert your code here!
   int width = ImageWidth(img1);
   int height = ImageHeight(img1);
   int width2 = ImageWidth(img2);
@@ -700,6 +700,30 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy)
-{ ///
-  // Insert your code here!
-}
+{
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  for (int y = 0; y < height; y++)
+  {
+    for (int x = 0; x < width; x++)
+    {
+      int sum = 0;
+      int count = 0;
+      for (int i = y - dy; i <= y + dy; i++)
+      {
+        for (int j = x - dx; j <= x + dx; j++)
+        {
+          // Verificar se (j, i) está dentro dos limites da imagem
+          if (j >= 0 && j < width && i >= 0 && i < height)
+          {
+            sum += ImageGetPixel(img, j, i);
+            count++;
+          }
+        }
+      }
+      uint8 mean = (uint8)(sum / count);
+      ImageSetPixel(img, x, y, mean);
+    }
+  }
+} 
