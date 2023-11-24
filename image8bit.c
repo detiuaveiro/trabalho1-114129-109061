@@ -408,7 +408,7 @@ uint8 ImageGetPixel(Image img, int x, int y)
   assert(img != NULL);
   assert(ImageValidPos(img, x, y));
   PIXMEM += 1; // count one pixel access (read)
-  return img->pixel[G(img, x, y)];
+  return img->pixel[G(img, x, y)]; 
 }
 
 /// Set the pixel at position (x,y) to new level.
@@ -418,7 +418,7 @@ void ImageSetPixel(Image img, int x, int y, uint8 level)
   assert(ImageValidPos(img, x, y));
   PIXMEM += 1; // count one pixel access (store)
   img->pixel[G(img, x, y)] = level;
-}
+} 
 
 /// Pixel transformations
 
@@ -547,7 +547,7 @@ Image ImageMirror(Image img)
     {
       int mirroredX = width - 1 - x;
       uint8 pixelValue = ImageGetPixel(img, x, y);
-      ImageSetPixel(mirroredImg, mirroredX, y, pixelValue);
+      ImageSetPixel(mirroredImg, mirroredX, y, pixelValue); //
     }
   }
 
@@ -592,12 +592,24 @@ Image ImageCrop(Image img, int x, int y, int w, int h)
 /// This modifies img1 in-place: no allocation involved.
 /// Requires: img2 must fit inside img1 at position (x, y).
 void ImagePaste(Image img1, int x, int y, Image img2)
-{ ///
-  assert(img1 != NULL);
-  assert(img2 != NULL);
-  assert(ImageValidRect(img1, x, y, img2->width, img2->height));
-  // Insert your code here!
+{
+    assert(img1 != NULL);
+    assert(img2 != NULL);
+    assert(ImageValidRect(img1, x, y, img2->width, img2->height));
+
+    int width = ImageWidth(img2);
+    int height = ImageHeight(img2);
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            uint8 pixelValue = ImageGetPixel(img2, j, i);
+            ImageSetPixel(img1, x + j, y + i, pixelValue);
+        }
+    }
 }
+
 
 /// Blend an image into a larger image.
 /// Blend img2 into position (x, y) of img1.
