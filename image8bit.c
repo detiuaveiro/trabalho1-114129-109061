@@ -521,6 +521,23 @@ Image ImageRotate(Image img)
 { ///
   assert(img != NULL);
   // Insert your code here!
+  int width = ImageWidth(img);
+  int height = ImageHeight(img);
+
+  // Cria uma nova imagem com as dimensões trocadas
+  Image rotatedImg = ImageCreate(height, width, img->maxval);
+
+  for (int y = 0; y < height; y++)
+  {
+    for (int x = 0; x < width; x++)
+    {
+      int rotatedX = y;
+      int rotatedY = width - 1 - x;
+      uint8 pixelValue = ImageGetPixel(img, x, y);
+      ImageSetPixel(rotatedImg, rotatedX, rotatedY, pixelValue); //
+    }
+  }
+  return rotatedImg;
 }
 
 /// Mirror an image = flip left-right.
