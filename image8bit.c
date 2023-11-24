@@ -153,7 +153,7 @@ void ImageInit(void)
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
 // Add more macros here...
-#define PIXMEM InstrCount[3]
+//#define PIXMEM InstrCount[3]
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
