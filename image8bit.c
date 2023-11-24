@@ -477,19 +477,13 @@ void ImageThreshold(Image img, uint8 thr)
 /// Multiply each pixel level by a factor, but saturate at maxval.
 /// This will brighten the image if factor>1.0 and
 /// darken the image if factor<1.0.
-void ImageBrighten(Image img, double factor) { ///
+void ImageBrighten(Image img, double factor) {
   assert(img != NULL);
-
-  // ? assert (factor >= 0.0);
   assert(factor >= 0);
 
-  // Insert your code here!
   for (long pos = 0; pos < img->height * img->width; pos++) {
-    if ((int)(img->pixel[pos] * factor + 0.5) <= img->maxval) {
-      img->pixel[pos] = (int)(img->pixel[pos] * factor + 0.5);
-      continue;
-    }
-    img->pixel[pos] = img->maxval;
+    int new_level = (int)(img->pixel[pos] * factor + 0.5);
+    img->pixel[pos] = (new_level <= img->maxval) ? new_level : img->maxval;
   }
 }
 
