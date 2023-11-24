@@ -154,7 +154,7 @@ void ImageInit(void)
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
 // Add more macros here...
-//#define PIXMEM InstrCount[3]
+// #define PIXMEM InstrCount[3]
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
@@ -477,11 +477,13 @@ void ImageThreshold(Image img, uint8 thr)
 /// Multiply each pixel level by a factor, but saturate at maxval.
 /// This will brighten the image if factor>1.0 and
 /// darken the image if factor<1.0.
-void ImageBrighten(Image img, double factor) {
+void ImageBrighten(Image img, double factor)
+{
   assert(img != NULL);
   assert(factor >= 0);
 
-  for (long pos = 0; pos < img->height * img->width; pos++) {
+  for (long pos = 0; pos < img->height * img->width; pos++)
+  {
     int new_level = (int)(img->pixel[pos] * factor + 0.5);
     img->pixel[pos] = (new_level <= img->maxval) ? new_level : img->maxval;
   }
@@ -622,23 +624,31 @@ void ImagePaste(Image img1, int x, int y, Image img2)
 /// Requires: img2 must fit inside img1 at position (x, y).
 /// alpha usually is in [0.0, 1.0], but values outside that interval
 /// may provide interesting effects.  Over/underflows should saturate.
-void ImageBlend(Image dest, Image src, int x, int y, double alpha) {
-  assert(dest != NULL);
-  assert(src != NULL);
-  assert(ImageValidPos(dest, x, y));
-  assert(alpha >= 0 && alpha <= 1);
+void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
+{ ///
+  assert(img1 != NULL);
+  assert(img2 != NULL);
+  assert(ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert(0.0 <= alpha && alpha <= 1.0);
+  // Insert your code here!
+  int width = ImageWidth(img2);
+  int height = ImageHeight(img2);
 
-  uint8 dest_pixel = ImageGetPixel(dest, x, y);
-  uint8 src_pixel = ImageGetPixel(src, x, y);
+  for (int i = 0; i < height; i++)
+  {
+    for (int j = 0; j < width; j++)
+    {
+      uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
+      uint8 pixelValue2 = ImageGetPixel(img2, j, i);
+      double blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * pixelValue2;
 
-  uint8 blended_pixel = (uint8)(alpha * dest_pixel + (1 - alpha) * src_pixel + 0.5);
+      // Verificação para garantir que o valor do pixel não ultrapassa o PixMax
+      blendedPixelValue = (blendedPixelValue > PixMax) ? PixMax : blendedPixelValue;
 
-  // Verificação para garantir que o valor do pixel não ultrapasse PixMax
-  blended_pixel = (blended_pixel > PixMax) ? PixMax : blended_pixel;
-
-  ImageSetPixel(dest, x, y, blended_pixel);
+      ImageSetPixel(img1, x + j, y + i, (uint8)blendedPixelValue);
+    }
+  }
 }
-
 
 /// Compare an image to a subimage of a larger image.
 /// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
