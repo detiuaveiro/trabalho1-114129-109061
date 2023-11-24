@@ -627,6 +627,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
   assert(img1 != NULL);
   assert(img2 != NULL);
   assert(ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert(0.0 <= alpha && alpha <= 1.0);
   // Insert your code here!
   int width = ImageWidth(img2);
   int height = ImageHeight(img2);
