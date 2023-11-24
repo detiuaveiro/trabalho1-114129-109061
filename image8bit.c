@@ -625,12 +625,12 @@ void ImagePaste(Image img1, int x, int y, Image img2)
 /// alpha usually is in [0.0, 1.0], but values outside that interval
 /// may provide interesting effects.  Over/underflows should saturate.
 void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
-{
+{ ///
   assert(img1 != NULL);
   assert(img2 != NULL);
   assert(ImageValidRect(img1, x, y, img2->width, img2->height));
   assert(0.0 <= alpha && alpha <= 1.0);
-
+  // Insert your code here!
   int width = ImageWidth(img2);
   int height = ImageHeight(img2);
 
@@ -640,15 +640,16 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
     {
       uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
       uint8 pixelValue2 = ImageGetPixel(img2, j, i);
-      double blendedPixelValueDouble = (1.0 - alpha) * pixelValue1 + alpha * pixelValue2;
+      double alphaChannel2 = ImageGetAlpha(img2, j, i); // Get the alpha channel of the second image
+      double blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * alphaChannel2 * pixelValue2;
 
-      // Garante que o valor não ultrapassa PixMax
-      uint8 blendedPixelValue = (blendedPixelValueDouble > PixMax) ? PixMax : (uint8)blendedPixelValueDouble;
+      // Verificação para garantir que o valor do pixel não ultrapassa oPixMax
+      blendedPixelValue = (blendedPixelValue > PixMax) ? PixMax : blendedPixelValue;
 
-      ImageSetPixel(img1, x + j, y + i, blendedPixelValue);
+      ImageSetPixel(img1, x + j, y + i, (uint8)blendedPixelValue);
     }
   }
-}
+} 
 
 /// Compare an image to a subimage of a larger image.
 /// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
