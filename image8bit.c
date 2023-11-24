@@ -640,8 +640,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
     {
       uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
       uint8 pixelValue2 = ImageGetPixel(img2, j, i);
-      double alphaChannel2 = ImageGetAlpha(img2, j, i); // Get the alpha channel of the second image
-      double blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * alphaChannel2 * pixelValue2;
+      double blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * pixelValue2;
 
       // Verificação para garantir que o valor do pixel não ultrapassa oPixMax
       blendedPixelValue = (blendedPixelValue > PixMax) ? PixMax : blendedPixelValue;
@@ -649,7 +648,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
       ImageSetPixel(img1, x + j, y + i, (uint8)blendedPixelValue);
     }
   }
-} 
+}
 
 /// Compare an image to a subimage of a larger image.
 /// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
