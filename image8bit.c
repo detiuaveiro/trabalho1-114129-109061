@@ -726,4 +726,4 @@ void ImageBlur(Image img, int dx, int dy)
       ImageSetPixel(img, x, y, mean);
     }
   }
-} 
+}
