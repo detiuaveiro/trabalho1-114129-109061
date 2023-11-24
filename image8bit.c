@@ -408,7 +408,7 @@ uint8 ImageGetPixel(Image img, int x, int y)
   assert(img != NULL);
   assert(ImageValidPos(img, x, y));
   PIXMEM += 1; // count one pixel access (read)
-  return img->pixel[G(img, x, y)]; 
+  return img->pixel[G(img, x, y)];
 }
 
 /// Set the pixel at position (x,y) to new level.
@@ -418,7 +418,7 @@ void ImageSetPixel(Image img, int x, int y, uint8 level)
   assert(ImageValidPos(img, x, y));
   PIXMEM += 1; // count one pixel access (store)
   img->pixel[G(img, x, y)] = level;
-} 
+}
 
 /// Pixel transformations
 
@@ -541,7 +541,7 @@ Image ImageMirror(Image img)
   // Cria uma nova imagem com as mesmas dimensões
   Image mirroredImg = ImageCreate(width, height, img->maxval);
 
-  for (int y = 0; y < height; y++) 
+  for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
     {
@@ -553,7 +553,6 @@ Image ImageMirror(Image img)
 
   return mirroredImg;
 }
-
 
 /// Crop a rectangular subimage from img.
 /// The rectangle is specified by the top left corner coords (x, y) and
@@ -573,17 +572,17 @@ Image ImageCrop(Image img, int x, int y, int w, int h)
   assert(ImageValidRect(img, x, y, w, h));
   // Insert your code here!
 
-  Image croppedImg = ImageCreate(w, h, img->maxval);  // Cria uma nova imagem com as dimensões do retângulo
+  Image croppedImg = ImageCreate(w, h, img->maxval); // Cria uma nova imagem com as dimensões do retângulo
 
   for (int i = 0; i < w * h; i++)
-{
+  {
     int x1 = i % w;
     int y1 = i / w;
     uint8 pixelValue = ImageGetPixel(img, x + x1, y + y1);
     ImageSetPixel(croppedImg, x1, y1, pixelValue);
-}
+  }
   return croppedImg;
-} 
+}
 
 /// Operations on two images
 
@@ -593,23 +592,22 @@ Image ImageCrop(Image img, int x, int y, int w, int h)
 /// Requires: img2 must fit inside img1 at position (x, y).
 void ImagePaste(Image img1, int x, int y, Image img2)
 {
-    assert(img1 != NULL);
-    assert(img2 != NULL);
-    assert(ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert(img1 != NULL);
+  assert(img2 != NULL);
+  assert(ImageValidRect(img1, x, y, img2->width, img2->height));
 
-    int width = ImageWidth(img2);
-    int height = ImageHeight(img2);
+  int width = ImageWidth(img2);
+  int height = ImageHeight(img2);
 
-    for (int i = 0; i < height; i++)
+  for (int i = 0; i < height; i++)
+  {
+    for (int j = 0; j < width; j++)
     {
-        for (int j = 0; j < width; j++)
-        {
-            uint8 pixelValue = ImageGetPixel(img2, j, i);
-            ImageSetPixel(img1, x + j, y + i, pixelValue);
-        }
+      uint8 pixelValue = ImageGetPixel(img2, j, i);
+      ImageSetPixel(img1, x + j, y + i, pixelValue);
     }
+  }
 }
-
 
 /// Blend an image into a larger image.
 /// Blend img2 into position (x, y) of img1.
@@ -623,6 +621,19 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
   assert(img2 != NULL);
   assert(ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
+  int width = ImageWidth(img2);
+  int height = ImageHeight(img2);
+
+  for (int i = 0; i < height; i++)
+  {
+    for (int j = 0; j < width; j++)
+    {
+      uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
+      uint8 pixelValue2 = ImageGetPixel(img2, j, i);
+      uint8 blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * pixelValue2;
+      ImageSetPixel(img1, x + j, y + i, blendedPixelValue);
+    }
+  }
 }
 
 /// Compare an image to a subimage of a larger image.
