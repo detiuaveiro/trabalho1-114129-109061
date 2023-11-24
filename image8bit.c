@@ -534,24 +534,19 @@ Image ImageRotate(Image img)
 Image ImageMirror(Image img)
 { ///
   assert(img != NULL);
-  // Insert your code here:
+  // Insert your code here! - done
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
   // Cria uma nova imagem com as mesmas dimensões
   Image mirroredImg = ImageCreate(width, height, img->maxval);
 
-  for (int y = 0; y < height; y++)
+  for (int y = 0; y < height; y++) 
   {
     for (int x = 0; x < width; x++)
     {
-      // Calcula a coordenada x espelhada
       int mirroredX = width - 1 - x;
-
-      // Obtém o valor do pixel na imagem original
       uint8 pixelValue = ImageGetPixel(img, x, y);
-
-      // Define o valor do pixel na imagem espelhada
       ImageSetPixel(mirroredImg, mirroredX, y, pixelValue);
     }
   }
@@ -577,7 +572,18 @@ Image ImageCrop(Image img, int x, int y, int w, int h)
   assert(img != NULL);
   assert(ImageValidRect(img, x, y, w, h));
   // Insert your code here!
+
+  Image croppedImg = ImageCreate(w, h, img->maxval);  // Cria uma nova imagem com as dimensões do retângulo
+
+  for (int i = 0; i < w * h; i++)
+{
+    int x1 = i % w;
+    int y1 = i / w;
+    uint8 pixelValue = ImageGetPixel(img, x + x1, y + y1);
+    ImageSetPixel(croppedImg, x1, y1, pixelValue);
 }
+  return croppedImg;
+} 
 
 /// Operations on two images
 
