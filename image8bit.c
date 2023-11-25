@@ -156,6 +156,8 @@ void ImageInit(void)
 // Add more macros here...
 // #define PIXMEM InstrCount[3]
 
+#define SATURATE(value, max) ((value) > (max) ? (max) : (value))
+
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
 /// Image management functions
@@ -641,11 +643,8 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
       uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
       uint8 pixelValue2 = ImageGetPixel(img2, j, i);
       double blendedPixelValue = (1.0 - alpha) * pixelValue1 + alpha * pixelValue2;
-
-      // Verificação para garantir que o valor do pixel não ultrapassa oPixMax
-      blendedPixelValue = (blendedPixelValue > PixMax) ? PixMax : blendedPixelValue;
-
-      ImageSetPixel(img1, x + j, y + i, (uint8)blendedPixelValue);
+      blendedPixelValue = SATURATE(blendedPixelValue, PixMax);
+      ImageSetPixel(img1, x + j, y + i, (uint8)round(blendedPixelValue));
     }
   }
 }
