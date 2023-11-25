@@ -714,8 +714,6 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 
 /// Filtering
 
-#include <stdint.h>
-
 // ...
 
 /// Blur an image by applying a (2dx+1) x (2dy+1) mean filter.
