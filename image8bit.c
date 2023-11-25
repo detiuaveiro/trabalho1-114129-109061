@@ -727,14 +727,6 @@ void ImageBlur(Image img, int dx, int dy)
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
-  // Verifique se o tamanho do filtro é válido
-  if (dx <= 0 || dy <= 0 || (dx % 2 == 0) || (dy % 2 == 0))
-  {
-    errno = EINVAL; // Invalid argument
-    errCause = "Invalid filter size";
-    return;
-  }
-
   // Crie uma matriz temporária para armazenar os valores médios
   uint8_t *temp = malloc(width * height * sizeof(uint8_t));
   if (temp == NULL)
@@ -752,18 +744,25 @@ void ImageBlur(Image img, int dx, int dy)
     {
       int sum = 0;
       int count = 0;
-      for (int i = y - dy; i <= y + dy; i++)
+
+      // Calcule a média dos vizinhos
+      for (int i = -dy; i <= dy; i++)
       {
-        for (int j = x - dx; j <= x + dx; j++)
+        for (int j = -dx; j <= dx; j++)
         {
-          // Verifique se (j, i) está dentro dos limites da imagem
-          if (ImageValidPos(img, j, i))
+          int nx = x + j;
+          int ny = y + i;
+
+          // Verifique se (nx, ny) está dentro dos limites da imagem
+          if (nx >= 0 && ny >= 0 && nx < width && ny < height)
           {
-            sum += ImageGetPixel(img, j, i);
+            sum += ImageGetPixel(img, nx, ny);
             count++;
           }
         }
       }
+
+      // Atribua a média à posição correspondente na matriz temporária
       temp[y * width + x] = (uint8_t)(sum / count);
     }
   }
