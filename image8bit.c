@@ -24,8 +24,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include "instrumentation.h"
 
@@ -714,6 +712,8 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 
 /// Filtering
 
+#include <stdint.h>
+
 // ...
 
 /// Blur an image by applying a (2dx+1) x (2dy+1) mean filter.
@@ -725,17 +725,20 @@ void ImageBlur(Image img, int dx, int dy)
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
-  // Crie uma matriz temporária para armazenar os valores médios
-  uint8_t *temp = malloc(width * height * sizeof(uint8_t));
-  if (temp == NULL)
+  if (dx <= 0 || dy <= 0 || (dx % 2 == 0) || (dy % 2 == 0))
   {
-    // Falha na alocação de memória
-    errno = ENOMEM; // Out of memory
-    errCause = "Memory allocation failure";
+    errno = EINVAL; // Invalid argument
+    errCause = "Invalid filter size";
     return;
   }
 
-  // Realize a operação de blur na matriz temporária
+  Image tempImg = ImageCreate(width, height, img->maxval);
+  if (tempImg == NULL)
+  {
+    // Handle memory allocation failure
+    return;
+  }
+
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
@@ -743,34 +746,30 @@ void ImageBlur(Image img, int dx, int dy)
       int sum = 0;
       int count = 0;
 
-      // Calcule a média dos vizinhos
-      for (int i = -dy; i <= dy; i++)
+      for (int i = y - dy; i <= y + dy; i++)
       {
-        for (int j = -dx; j <= dx; j++)
+        for (int j = x - dx; j <= x + dx; j++)
         {
-          int nx = x + j;
-          int ny = y + i;
-
-          // Verifique se (nx, ny) está dentro dos limites da imagem
-          if (nx >= 0 && ny >= 0 && nx < width && ny < height)
+          if (ImageValidPos(img, j, i))
           {
-            sum += ImageGetPixel(img, nx, ny);
+            sum += ImageGetPixel(img, j, i);
             count++;
           }
         }
       }
 
-      // Atribua a média à posição correspondente na matriz temporária
-      temp[y * width + x] = (uint8_t)(sum / count);
+      double mean = (double)sum / count;
+      uint8_t roundedValue = (uint8_t)(mean + 0.5);
+
+      ImageSetPixel(tempImg, x, y, roundedValue);
     }
   }
 
-  // Copie os valores médios de volta para a imagem original
+  // Copy the temporary image back to the original image
   for (int i = 0; i < width * height; i++)
   {
-    img->pixel[i] = temp[i];
+    img->pixel[i] = tempImg->pixel[i];
   }
 
-  // Libere a matriz temporária
-  free(temp);
+  ImageDestroy(&tempImg);
 }
