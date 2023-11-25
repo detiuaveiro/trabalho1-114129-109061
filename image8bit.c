@@ -712,10 +712,6 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 
 /// Filtering
 
-#include <stdint.h>
-
-// ...
-
 /// Blur an image by applying a (2dx+1) x (2dy+1) mean filter.
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx] x [y-dy, y+dy].
@@ -768,7 +764,7 @@ void ImageBlur(Image img, int dx, int dy)
   // Copy the temporary image back to the original image
   for (int i = 0; i < width * height; i++)
   {
-    img->pixel[i] = tempImg->pixel[i];
+    img->pixel = tempImg->pixel;
   }
 
   ImageDestroy(&tempImg);
