@@ -155,9 +155,6 @@ void ImageInit(void)
 #define PIXMEM InstrCount[0]
 // Add more macros here...
 // #define PIXMEM InstrCount[3]
-
-#define SATURATE(value, max) ((value) > (max) ? (max) : (value))
-
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
 /// Image management functions
@@ -715,15 +712,36 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 
 /// Filtering
 
-/// Blur an image by a applying a (2dx+1)x(2dy+1) mean filter.
+#include <stdint.h>
+
+// ...
+
+/// Blur an image by applying a (2dx+1) x (2dy+1) mean filter.
 /// Each pixel is substituted by the mean of the pixels in the rectangle
-/// [x-dx, x+dx]x[y-dy, y+dy].
+/// [x-dx, x+dx] x [y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy)
 {
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
+  // Verifique se o tamanho do filtro é válido
+  if (dx <= 0 || dy <= 0 || (dx % 2 == 0) || (dy % 2 == 0))
+  {
+    errno = EINVAL; // Invalid argument
+    errCause = "Invalid filter size";
+    return;
+  }
+
+  // Crie uma cópia temporária da imagem
+  Image tempImg = ImageCreate(width, height, img->maxval);
+  if (tempImg == NULL)
+  {
+    // Ocorreu um erro ao criar a imagem temporária
+    return;
+  }
+
+  // Realize a operação de blur na imagem temporária
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
@@ -734,16 +752,25 @@ void ImageBlur(Image img, int dx, int dy)
       {
         for (int j = x - dx; j <= x + dx; j++)
         {
-          // Verificar se (j, i) está dentro dos limites da imagem
-          if (j >= 0 && j < width && i >= 0 && i < height)
+          // Verifique se (j, i) está dentro dos limites da imagem
+          if (ImageValidPos(img, j, i))
           {
             sum += ImageGetPixel(img, j, i);
             count++;
           }
         }
       }
-      uint8 mean = (uint8)(sum / count);
-      ImageSetPixel(img, x, y, mean);
+      uint8_t mean = (uint8_t)(sum / count);
+      ImageSetPixel(tempImg, x, y, mean);
     }
   }
+
+  // Copie a imagem temporária de volta para a imagem original
+  for (int i = 0; i < width * height; i++)
+  {
+    img->pixel[i] = tempImg->pixel[i];
+  }
+
+  // Libere a imagem temporária
+  ImageDestroy(&tempImg);
 }
