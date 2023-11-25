@@ -764,7 +764,7 @@ void ImageBlur(Image img, int dx, int dy)
   // Copy the temporary image back to the original image
   for (int i = 0; i < width * height; i++)
   {
-    img->pixel = tempImg->pixel;
+    img->pixel[i] = tempImg->pixel[i];
   }
 
   ImageDestroy(&tempImg);
