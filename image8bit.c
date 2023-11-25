@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include "instrumentation.h"
 
@@ -734,15 +735,17 @@ void ImageBlur(Image img, int dx, int dy)
     return;
   }
 
-  // Crie uma cópia temporária da imagem
-  Image tempImg = ImageCreate(width, height, img->maxval);
-  if (tempImg == NULL)
+  // Crie uma matriz temporária para armazenar os valores médios
+  uint8_t *temp = malloc(width * height * sizeof(uint8_t));
+  if (temp == NULL)
   {
-    // Ocorreu um erro ao criar a imagem temporária
+    // Falha na alocação de memória
+    errno = ENOMEM; // Out of memory
+    errCause = "Memory allocation failure";
     return;
   }
 
-  // Realize a operação de blur na imagem temporária
+  // Realize a operação de blur na matriz temporária
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
@@ -761,17 +764,16 @@ void ImageBlur(Image img, int dx, int dy)
           }
         }
       }
-      uint8_t mean = (uint8_t)(sum / count);
-      ImageSetPixel(tempImg, x, y, mean);
+      temp[y * width + x] = (uint8_t)(sum / count);
     }
   }
 
-  // Copie a imagem temporária de volta para a imagem original
+  // Copie os valores médios de volta para a imagem original
   for (int i = 0; i < width * height; i++)
   {
-    img->pixel[i] = tempImg->pixel[i];
+    img->pixel[i] = temp[i];
   }
 
-  // Libere a imagem temporária
-  ImageDestroy(&tempImg);
+  // Libere a matriz temporária
+  free(temp);
 }
