@@ -689,7 +689,7 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
 { ///
   assert(img1 != NULL);
   assert(img2 != NULL);
-  // Insert your code here!
+  //  Insert your code here!
   int width = ImageWidth(img1);
   int height = ImageHeight(img1);
   int width2 = ImageWidth(img2);
@@ -721,13 +721,6 @@ void ImageBlur(Image img, int dx, int dy)
   int width = ImageWidth(img);
   int height = ImageHeight(img);
   double *averages = malloc(sizeof(double) * height * width);
-
-  if (dx <= 0 || dy <= 0 || (dx % 2 == 0) || (dy % 2 == 0))
-  {
-    errno = EINVAL; // Invalid argument
-    errCause = "Invalid filter size";
-    return;
-  }
 
   for (int y = 0; y < height; y++)
   {
