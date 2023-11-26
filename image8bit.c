@@ -760,7 +760,7 @@ void ImageBlur(Image img, int dx, int dy)
             count++;
           }
         }
-        uint8_t final_color = (uint8)(total / count + 0.5);
+        uint8_t final_color = (uint8)((total / count) + 0.5);
         ImageSetPixel(img, x, y, final_color);
       }
     }
