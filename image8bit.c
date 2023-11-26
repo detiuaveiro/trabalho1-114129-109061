@@ -720,6 +720,7 @@ void ImageBlur(Image img, int dx, int dy)
 {
   int width = ImageWidth(img);
   int height = ImageHeight(img);
+  double *averages = malloc(sizeof(double) * height * width);
 
   if (dx <= 0 || dy <= 0 || (dx % 2 == 0) || (dy % 2 == 0))
   {
@@ -728,44 +729,50 @@ void ImageBlur(Image img, int dx, int dy)
     return;
   }
 
-  Image tempImg = ImageCreate(width, height, img->maxval);
-  if (tempImg == NULL)
-  {
-    // Handle memory allocation failure
-    return;
-  }
-
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
     {
-      int sum = 0;
-      int count = 0;
-
-      for (int i = y - dy; i <= y + dy; i++)
+      if (ImageValidPos(img, x, y))
       {
-        for (int j = x - dx; j <= x + dx; j++)
+        int count = 0;
+        int total = 0;
+        for (int j = y - dy; j <= y + dy; j++)
         {
-          if (ImageValidPos(img, j, i))
+          if (ImageValidPos(img, x, j))
           {
-            sum += ImageGetPixel(img, j, i);
+            total += ImageGetPixel(img, x, j);
             count++;
           }
         }
+        double final_colors = total / count;
+        averages[y * width + x] = final_colors;
       }
-
-      double mean = (double)sum / count;
-      uint8_t roundedValue = (uint8_t)(mean + 0.5);
-
-      ImageSetPixel(tempImg, x, y, roundedValue);
     }
   }
 
-  // Copy the temporary image back to the original image
-  for (int i = 0; i < width * height; i++)
+  for (int x = 0; x < width; x++)
   {
-    img->pixel[i] = tempImg->pixel[i];
+    for (int y = 0; y < height; y++)
+    {
+      if (ImageValidPos(img, x, y))
+      {
+        int count = 0;
+        int total = 0;
+        for (int i = x - dx; i <= x + dx; i++)
+        {
+          if (ImageValidPos(img, i, y))
+          {
+            total += averages[y * width + i];
+            count++;
+          }
+        }
+        uint8_t final_color = (uint8)(total / count + 0.5);
+        ImageSetPixel(img, x, y, final_color);
+      }
+    }
   }
 
-  ImageDestroy(&tempImg);
+  // ImageDestroy(tempImg);
+  free(averages);
 }
