@@ -148,7 +148,6 @@ void ImageInit(void)
   InstrCalibrate();
   InstrName[0] = "pixmem"; // InstrCount[0] will count pixel array acesses
   // Name other counters here...
-  InstrName[3] = "bri";
 }
 
 // Macros to simplify accessing instrumentation counters:
@@ -397,7 +396,9 @@ static inline int G(Image img, int x, int y)
 {
   int index;
   // Insert your code here! - done
+  // Cálculo o indíce linear
   index = y * ImageWidth(img) + x;
+  // Garante que os indíces estão dentro dos limites da imagem
   assert(0 <= index && index < img->width * img->height);
   return index;
 }
@@ -433,17 +434,17 @@ void ImageSetPixel(Image img, int x, int y, uint8 level)
 void ImageNegative(Image img)
 { ///
   assert(img != NULL);
-  // Insert your code here! - done
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
+  // Itera sobre todos os pixels da imagem
   for (int i = 0; i < width * height; i++)
   {
-    // Calculate negative level for each pixel
+    // Calcula o nível negativo para cada pixel
     uint8 originalLevel = img->pixel[i];
     uint8 negativeLevel = PixMax - originalLevel;
 
-    // Set the pixel to the negative level
+    // Define o pixel com o nível negativo
     img->pixel[i] = negativeLevel;
   }
 }
@@ -458,9 +459,11 @@ void ImageThreshold(Image img, uint8 thr)
   int width = ImageWidth(img);
   int height = ImageHeight(img);
 
+  // Itera sobre todos os pixels da imagem
   for (int i = 0; i < width * height; i++)
   {
     uint8 level = img->pixel[i];
+    // Define o pixel como preto ou branco dependendo do nível
     if (level >= thr)
     {
       img->pixel[i] = PixMax;
@@ -481,9 +484,12 @@ void ImageBrighten(Image img, double factor)
   assert(img != NULL);
   assert(factor >= 0);
 
+  // Itera sobre todos os pixels da imagem
   for (long pos = 0; pos < img->height * img->width; pos++)
   {
+    // Calcula o novo nível do pixel
     int new_level = (int)(img->pixel[pos] * factor + 0.5);
+    // Garante que o novo nível está dentro dos limites da imagem
     img->pixel[pos] = (new_level <= img->maxval) ? new_level : img->maxval;
   }
 }
@@ -519,10 +525,12 @@ Image ImageRotate(Image img)
   // Cria uma nova imagem com as dimensões trocadas
   Image rotatedImg = ImageCreate(height, width, img->maxval);
 
+  // Itera sobre todos os pixels da imagem
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
     {
+      // Calcula as coordenadas do pixel na imagem rotacionada
       int rotatedX = y;
       int rotatedY = width - 1 - x;
       uint8 pixelValue = ImageGetPixel(img, x, y);
@@ -549,10 +557,12 @@ Image ImageMirror(Image img)
   // Cria uma nova imagem com as mesmas dimensões
   Image mirroredImg = ImageCreate(width, height, img->maxval);
 
+  // Itera sobre todos os pixels da imagem
   for (int y = 0; y < height; y++)
   {
     for (int x = 0; x < width; x++)
     {
+      // Calcula as coordenadas do pixel na imagem espelhada
       int mirroredX = width - 1 - x;
       uint8 pixelValue = ImageGetPixel(img, x, y);
       ImageSetPixel(mirroredImg, mirroredX, y, pixelValue); //
@@ -582,8 +592,10 @@ Image ImageCrop(Image img, int x, int y, int w, int h)
 
   Image croppedImg = ImageCreate(w, h, img->maxval); // Cria uma nova imagem com as dimensões do retângulo
 
+  // Itera sobre todos os pixels da imagem
   for (int i = 0; i < w * h; i++)
   {
+    // Calcula as coordenadas do pixel na imagem cortada
     int x1 = i % w;
     int y1 = i / w;
     uint8 pixelValue = ImageGetPixel(img, x + x1, y + y1);
@@ -633,10 +645,12 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha)
   int width = ImageWidth(img2);
   int height = ImageHeight(img2);
 
+  // Itera sobre todos os pixels da imagem
   for (int i = 0; i < height; i++)
   {
     for (int j = 0; j < width; j++)
     {
+      // Calcula o valor do pixel blendado
       uint8 pixelValue1 = ImageGetPixel(img1, x + j, y + i);
       uint8 pixelValue2 = ImageGetPixel(img2, j, i);
 
@@ -665,10 +679,12 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2)
   int width = ImageWidth(img2);
   int height = ImageHeight(img2);
 
+  // Itera sobre todos os pixels da imagem
   for (int i = 0; i < height; i++)
   {
     for (int j = 0; j < width; j++)
     {
+      // Compara os pixels das duas imagens
       uint8 pixelSubImage = ImageGetPixel(img1, x + j, y + i);
       uint8 pixelImg2 = ImageGetPixel(img2, j, i);
 
@@ -695,10 +711,12 @@ int ImageLocateSubImage(Image img1, int *px, int *py, Image img2)
   int width2 = ImageWidth(img2);
   int height2 = ImageHeight(img2);
 
+  // Itera sobre todos os pixels da imagem
   for (int y = 0; y < height - height2 + 1; y++)
   {
     for (int x = 0; x < width - width2 + 1; x++)
     {
+      // Verifica se a subimagem é igual à imagem
       if (ImageMatchSubImage(img1, x, y, img2))
       {
         *px = x;
@@ -726,8 +744,10 @@ void ImageBlur(Image img, int dx, int dy)
   {
     for (int x = 0; x < width; x++)
     {
+      // Verifica se a posição do pixel é válida
       if (ImageValidPos(img, x, y))
       {
+        // Calcula a média dos pixels
         int count = 0;
         int total = 0;
         for (int j = y - dy; j <= y + dy; j++)
@@ -738,6 +758,7 @@ void ImageBlur(Image img, int dx, int dy)
             count++;
           }
         }
+        // Guarda a média dos pixels num array dinámico
         double final_colors = total / count;
         averages[y * width + x] = final_colors;
       }
@@ -750,6 +771,7 @@ void ImageBlur(Image img, int dx, int dy)
     {
       if (ImageValidPos(img, x, y))
       {
+        // Calcula a média dos pixels
         int count = 0;
         int total = 0;
         for (int i = x - dx; i <= x + dx; i++)
@@ -761,6 +783,7 @@ void ImageBlur(Image img, int dx, int dy)
           }
         }
         uint8_t final_color = (uint8)(total / count + 0.5);
+        // Define o pixel com a média dos pixelsq
         ImageSetPixel(img, x, y, final_color);
       }
     }

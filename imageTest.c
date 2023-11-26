@@ -69,18 +69,18 @@ int main(int argc, char *argv[])
 
   // testar a ImageLocateSubImage com img1 e img2 (worst case)
 
-  InstrReset();
-  ImageLocateSubImage(img3, &px, &py, img2);
-  InstrPrint();
+  // InstrReset();
+  // ImageLocateSubImage(img3, &px, &py, img2);
+  // InstrPrint();
 
   printf("px = %d, py = %d\n", px, py);
 
   // Test ImageBlur(Image img, int dx, int dy)
   // ImageBlur(img2, 3, 3);
   // mais blur
-  // InstrReset();
-  // ImageBlur(img2, 5, 5);
-  // InstrPrint();
+  InstrReset();
+  ImageBlur(img2, 3, 3);
+  InstrPrint();
   // ainda mais blured
   // InstrReset();
   // ImageBlur(img2, 7, 7);
